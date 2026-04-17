@@ -1,0 +1,209 @@
+.membership-header {
+  padding: 160px 0 60px;
+  background: linear-gradient(to bottom, var(--color-black), var(--color-green-light));
+  border-bottom: 1px solid rgba(207, 168, 97, 0.2);
+}
+
+/* Pricing Grid */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  align-items: stretch;
+}
+
+.pricing-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.highlighted-card {
+  border-color: var(--color-gold);
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.invite-only-card {
+  opacity: 0.9;
+  background: rgba(10, 10, 10, 0.9);
+}
+
+.popular-badge {
+  position: absolute;
+  top: 15px;
+  right: -35px;
+  background: var(--color-gold);
+  color: var(--color-black);
+  padding: 5px 40px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  transform: rotate(45deg);
+}
+
+.card-header {
+  text-align: center;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 30px;
+}
+
+.card-header h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  line-height: 1.3;
+  letter-spacing: 2px;
+}
+
+.price-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.currency {
+  font-size: 24px;
+  align-self: flex-start;
+  margin-top: 5px;
+}
+
+.amount {
+  font-size: 48px;
+  font-family: var(--font-heading);
+  font-weight: bold;
+}
+
+.period {
+  color: var(--color-gray);
+  margin-left: 5px;
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.lifetime-fee {
+  font-size: 14px;
+  color: var(--color-gray);
+  letter-spacing: 1px;
+}
+
+.benefits-list {
+  list-style: none;
+  flex-grow: 1;
+  margin-bottom: 40px;
+}
+
+.benefits-list li {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  color: var(--color-white);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+/* Split Layout */
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.type-list {
+  list-style: none;
+}
+
+.type-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: var(--transition-smooth);
+}
+
+.type-list li:hover {
+  border-color: rgba(207, 168, 97, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.type-list h4 {
+  color: var(--color-white);
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.type-list p {
+  color: var(--color-gray);
+  font-size: 14px;
+}
+
+/* Process Timeline */
+.process-timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.process-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(207, 168, 97, 0.3);
+}
+
+.process-step {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.process-step:last-child {
+  margin-bottom: 0;
+}
+
+.step-number {
+  position: absolute;
+  left: -45px;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  background: var(--color-black);
+  border: 1px solid var(--color-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold);
+  font-family: var(--font-heading);
+  font-weight: bold;
+}
+
+.step-content h4 {
+  font-size: 18px;
+  color: var(--color-white);
+  margin-bottom: 8px;
+}
+
+.step-content p {
+  color: var(--color-gray);
+  font-size: 14px;
+}
+
+@media (max-width: 992px) {
+  .split-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
