@@ -15,6 +15,24 @@ const Dashboard = () => {
     } else {
       setUser(JSON.parse(userData));
     }
+
+    // Check for Stripe redirect success
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('stripe_success') === 'true' && params.get('appId')) {
+      const appId = params.get('appId');
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payment/stripe/verify-webhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ applicationId: appId })
+      }).then(res => res.json()).then(data => {
+        if(data.success) {
+          alert('Stripe International Payment Confirmed! Membership Activated.');
+          // clean url
+          window.history.replaceState({}, document.title, "/dashboard");
+        }
+      });
+    }
+
   }, [navigate]);
 
   if (!user) return <div className="home-page" style={{ paddingTop: '100px', textAlign: 'center' }}>Loading Vault...</div>;

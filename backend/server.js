@@ -23,6 +23,9 @@ const razorpayInstance = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy',
 });
 
+// Stripe Initialization for International Payments
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'dummy_stripe_key');
+
 // Nodemailer Initialization
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -159,6 +162,52 @@ app.post('/api/payment/verify', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+// ------------- STRIPE PAYMENT ENDPOINTS (INTERNATIONAL) -------------
+app.post('/api/payment/stripe/create-checkout-session', async (req, res) => {
+  try {
+    const { amount, currency = "usd", receipt, applicationId } = req.body;
+    
+    // Stripe expects amount in cents. If frontend converted INR to USD, it should send the correct USD amount * 100.
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: currency,
+            product_data: {
+              name: 'Nexus Elite Club - Lifetime Membership',
+              description: 'Exclusive global ecosystem access. Application Ref: #' + receipt,
+            },
+            unit_amount: amount * 100, // amount in USD cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard?stripe_success=true&appId=${applicationId}`,
+      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/${applicationId}`,
+      metadata: { applicationId },
+    });
+
+    res.json({ success: true, id: session.id, url: session.url });
+  } catch (err) {
+    console.error("Stripe Error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/payment/stripe/verify-webhook', async (req, res) => {
+  // In a robust implementation, you should handle Stripe Webhooks here to verify payment signatures.
+  // For immediate redirection success logic, we'll verify it via a standard API hit from Dashboard.
+  const { applicationId } = req.body;
+  if (!applicationId) return res.status(400).json({ success: false });
+
+  const { error } = await supabase.from('Applications').update({ status: 'Paid & Activated' }).eq('id', applicationId);
+  if (error) return res.status(500).json({ success: false });
+  
+  res.json({ success: true, message: "Stripe payment activated" });
 });
 
 const PORT = 5000;

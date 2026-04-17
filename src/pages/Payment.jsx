@@ -96,6 +96,33 @@ const Payment = () => {
     }
   };
 
+  const handleStripePayment = async () => {
+    setLoading(true);
+    setStatus('Initializing Stripe global gateway...');
+    const feeAmountUSD = 10000; // Mock USD 10,000 for $1M tier approx (test limits)
+
+    try {
+      const orderRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payment/stripe/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: feeAmountUSD, currency: 'usd', receipt: `rcpt_${applicationId}`, applicationId })
+      });
+      const orderData = await orderRes.json();
+
+      if (!orderData.success) {
+        setStatus(`Failed to initiate Stripe order. Trace: ${orderData.error ? JSON.stringify(orderData.error) : 'Invalid Stripe Configurations!'}`);
+        setLoading(false);
+        return;
+      }
+      
+      // Redirect directly to the Stripe-hosted checkout page
+      window.location.href = orderData.url;
+    } catch (err) {
+      setStatus(`Stripe Error: ${err.message}`);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="home-page" style={{ paddingTop: '150px', paddingBottom: '100px', display: 'flex', justifyContent: 'center' }}>
       <div className="premium-card text-center" style={{ width: '100%', maxWidth: '600px', borderTop: '4px solid var(--color-gold)' }}>
@@ -116,15 +143,26 @@ const Payment = () => {
 
         {status && <div style={{ color: 'var(--color-gold)', marginBottom: '20px', padding: '10px', border: '1px solid var(--color-gold)' }}>{status}</div>}
 
-        <button 
-          className="btn btn-primary" 
-          onClick={handlePayment} 
-          disabled={loading}
-          style={{ width: '100%', padding: '16px', fontSize: '16px' }}
-        >
-          {loading ? 'Initializing...' : 'Proceed to Pay Securely'}
-        </button>
-        <p className="text-gray" style={{ marginTop: '20px', fontSize: '12px' }}>Powered by Razorpay Secure Pipeline.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <button 
+            className="btn btn-primary" 
+            onClick={handlePayment} 
+            disabled={loading}
+            style={{ width: '100%', padding: '16px', fontSize: '16px' }}
+          >
+            {loading ? 'Initializing...' : 'Proceed to Pay (Domestic / Razorpay)'}
+          </button>
+          
+          <button 
+            onClick={handleStripePayment} 
+            disabled={loading}
+            style={{ width: '100%', padding: '16px', fontSize: '16px', backgroundColor: '#635BFF', color: 'white', border: 'none', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'Cinzel' }}
+          >
+            {loading ? 'Initializing...' : 'Pay International (Stripe)'}
+          </button>
+        </div>
+        
+        <p className="text-gray" style={{ marginTop: '20px', fontSize: '12px' }}>Powered by Razorpay & Stripe Secure Pipelines.</p>
       </div>
     </div>
   );
